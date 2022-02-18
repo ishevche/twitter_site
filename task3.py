@@ -8,8 +8,10 @@ from geopy.geocoders import Nominatim
 
 import task2
 
-# app = Flask('UCU labs', template_folder='mysite/templates')
-app = Flask('UCU labs', template_folder='templates')
+print(load_dotenv('mysite/.env'))
+# print(load_dotenv('venv/.env'))
+app = Flask('UCU labs', template_folder='mysite/templates')
+# app = Flask('UCU labs', template_folder='templates')
 
 
 @app.route('/')
@@ -26,11 +28,10 @@ def get_map() -> str:
     Returns html page with a map on it with markers - friends
     of user passed as a parameter
     """
-    map_html, response = get_map_for_user(request.args.get('username'))
-    if response:
-        return map_html
-    else:
-        return render_template('index.html', error_content=map_html)
+    try:
+        return get_map_for_user(request.args.get('username'))
+    except ValueError as e:
+        return render_template('index.html', error_content=e.__str__())
 
 
 def get_location_from_geopy(location: str) -> tuple:
@@ -134,11 +135,8 @@ def get_map_for_user(username: str):
         except KeyError:
             pass
 
-    return build_map(locations_data), True
+    return build_map(locations_data)
 
 
 if __name__ == '__main__':
-    # dotenv_folder = os.path.expanduser('mysite')
-    dotenv_folder = os.path.expanduser('venv')
-    load_dotenv(os.path.join(dotenv_folder, '.env'))
     app.run(port=8080)
