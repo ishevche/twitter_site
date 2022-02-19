@@ -19,7 +19,7 @@ def root() -> str:
     """
     Returns base html page when user enters the site
     """
-    return render_template("index.html")
+    return render_template("index.html", flash_message="False")
 
 
 @app.route('/map')
@@ -29,9 +29,11 @@ def get_map() -> str:
     of user passed as a parameter
     """
     try:
-        return get_map_for_user(request.args.get('username'))
+        return get_map_for_user(request.args.get('username'),
+                                request.args.get('count'))
     except ValueError as e:
-        return render_template('index.html', error_content=e.__str__())
+        return render_template('index.html', flash_message="True",
+                               error_data=e.__str__())
 
 
 def get_location_from_geopy(location: str) -> tuple:
@@ -88,7 +90,7 @@ def get_user_id(username: str) -> int:
                                      path_to_field=['data', 'id'])
 
 
-def get_locations_by_id(user_id: int) -> requests.Response:
+def get_locations_by_id(user_id: int, count: str) -> requests.Response:
     """
     Gets locations response by user id
     """
@@ -96,7 +98,8 @@ def get_locations_by_id(user_id: int) -> requests.Response:
     follows_response = requests.get('https://api.twitter.com'
                                     f'/2/users/{user_id}/following',
                                     headers=header,
-                                    params={'user.fields': 'location'})
+                                    params={'user.fields': 'location',
+                                            'max_results': count})
 
     if follows_response.status_code != 200:
         raise ValueError(f'Returned code: {follows_response.status_code}')
@@ -111,14 +114,14 @@ def get_locations_by_id(user_id: int) -> requests.Response:
     return follows_response
 
 
-def get_map_for_user(username: str):
+def get_map_for_user(username: str, count: str):
     """
     Gets folium for provided username
     """
     print(f'Someone wants to know about {username}')
 
     user_id = get_user_id(username)
-    follows_response = get_locations_by_id(user_id)
+    follows_response = get_locations_by_id(user_id, count)
 
     amount = task2.get_field_from_json(json_str=follows_response.text,
                                        path_to_field=['meta', 'result_count'])

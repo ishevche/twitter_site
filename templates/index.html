@@ -1,5 +1,205 @@
-<h3>{{ error_content }}</h3>
-<form action="/map" method="get">
-    <input type="text" name="username" placeholder="USERNAME!!!!!"/>
-    <input type="submit" value="GOOOOOOO!!!!!"/>
+<body onload="adjust_textarea()">
+<form class="form-style-7" action="/map" method="get">
+    <ul>
+        <li>
+            <label for="username">Username</label>
+            <input type="text" name="username" maxlength="100">
+            <span>Enter username to find here</span>
+        </li>
+        <li>
+            <label for="count">Count</label>
+            <input type="number" name="count" max="100">
+            <span>Enter amount of friends to show</span>
+        </li>
+        <li>
+            <input type="submit" value="Get map">
+        </li>
+    </ul>
 </form>
+<div class="alert" id="error">
+    <span class="closebtn"
+          onclick="this.parentElement.style.display='none';">&times;</span>
+    {{ error_data }}
+</div>
+<style type="text/css">
+    .form-style-7 {
+        max-width: 400px;
+        margin: 50px auto;
+        background: #202324;
+        color: #aba499;
+        border-radius: 2px;
+        padding: 20px;
+        font-family: Georgia, "Times New Roman", Times, serif;
+    }
+
+    .form-style-7 h1 {
+        display: block;
+        text-align: center;
+        padding: 0;
+        background: #202324;
+        margin: 0px 0px 20px 0px;
+        color: #5C5C5C;
+        font-size: x-large;
+    }
+
+    .form-style-7 ul {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+
+    .form-style-7 li {
+        display: block;
+        padding: 9px;
+        border: 1px solid rgb(58, 62, 65);
+        background-color: #202324;
+        color: #aba499;
+        margin-bottom: 30px;
+        border-radius: 3px;
+    }
+
+    .form-style-7 li:last-child {
+        border: none;
+        margin-bottom: 0px;
+        text-align: center;
+        background-color: #202324;
+    }
+
+    .form-style-7 li > label {
+        display: block;
+        float: left;
+        margin-top: -19px;
+        background: #202324;
+        height: 14px;
+        padding: 2px 5px 2px 5px;
+        color: #B9B9B9;
+        font-size: 14px;
+        overflow: hidden;
+        font-family: Arial, Helvetica, sans-serif;
+    }
+
+    .form-style-7 input[type="text"],
+    .form-style-7 input[type="date"],
+    .form-style-7 input[type="datetime"],
+    .form-style-7 input[type="email"],
+    .form-style-7 input[type="number"],
+    .form-style-7 input[type="search"],
+    .form-style-7 input[type="time"],
+    .form-style-7 input[type="url"],
+    .form-style-7 input[type="password"],
+    .form-style-7 textarea,
+    .form-style-7 select {
+        box-sizing: border-box;
+        -webkit-box-sizing: border-box;
+        -moz-box-sizing: border-box;
+        width: 100%;
+        display: block;
+        outline: none;
+        border: none;
+        height: 25px;
+        line-height: 25px;
+        font-size: 16px;
+        padding: 0;
+        font-family: Georgia, "Times New Roman", Times, serif;
+
+        background: #202324;
+        color: #aba499;
+    }
+
+    .form-style-7 input[type="text"]:focus,
+    .form-style-7 input[type="date"]:focus,
+    .form-style-7 input[type="datetime"]:focus,
+    .form-style-7 input[type="email"]:focus,
+    .form-style-7 input[type="number"]:focus,
+    .form-style-7 input[type="search"]:focus,
+    .form-style-7 input[type="time"]:focus,
+    .form-style-7 input[type="url"]:focus,
+    .form-style-7 input[type="password"]:focus,
+    .form-style-7 textarea:focus,
+    .form-style-7 select:focus {
+    }
+
+    .form-style-7 li > span {
+        background: rgb(31, 33, 35);
+        display: block;
+        padding: 3px;
+        margin: 0 -9px -9px -9px;
+        text-align: center;
+        color: rgb(192, 187, 179);
+        font-family: Arial, Helvetica, sans-serif;
+        font-size: 11px;
+    }
+
+    .form-style-7 textarea {
+        resize: none;
+    }
+
+    .form-style-7 input[type="submit"],
+    .form-style-7 input[type="button"] {
+        background: rgb(0, 64, 182);
+        border: none;
+        padding: 10px 20px 10px 20px;
+        border-bottom: 3px solid rgb(0, 54, 152);
+        border-radius: 3px;
+        color: rgb(172, 214, 255);
+    }
+
+    .form-style-7 input[type="submit"]:hover,
+    .form-style-7 input[type="button"]:hover {
+        background: rgb(0, 49, 140);
+        color: rgb(232, 230, 227);
+    }
+
+    .alert {
+        padding: 20px;
+        background-color: #96303a88;
+        color: white;
+        border-radius: 8px;
+        position:absolute;
+        right: 0;
+        bottom: 5%;
+
+        transition-duration: 2s;
+        transform: translate(100%, 0%);
+        transition-timing-function: ease-in-out;
+        transition-property: transform;
+    }
+
+    .alert_active {
+        transform: translate(-10%, 0%);
+    }
+
+    .closebtn {
+        margin-left: 15px;
+        color: white;
+        font-weight: bold;
+        float: right;
+        font-size: 22px;
+        line-height: 20px;
+        cursor: pointer;
+        transition: 0.3s;
+    }
+
+
+    body {
+        overflow: hidden;
+        background-color: #181a1b;
+        color: #e8e6e3;
+    }
+</style>
+<script type="text/javascript">
+    function adjust_textarea() {
+        if ("{{ flash_message }}" == "True") {
+            let error = document.getElementById('error')
+            error.classList.toggle("alert_active")
+            setTimeout(myFunction, 10000)
+        }
+    }
+
+    function myFunction() {
+        let error = document.getElementById('error')
+        error.classList.toggle("alert_active")
+    }
+
+</script>
+</body>
